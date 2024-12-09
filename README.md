@@ -27,7 +27,8 @@ $ echo -e 'GET / HTTP/1.1\nHost: ipv6.google.com\n\n' | wgcfcat -a -h ipv6.googl
 
 ## Credits
 
-- wgcf - https://github.com/ViRb3/wgcf
+- wgcf - an unofficial, cross-platform CLI for Cloudflare WARP - https://github.com/ViRb3/wgcf
+- wireguard-go - Go userland implementation of the WireGuard protocol - https://git.zx2c4.com/wireguard-go/about
 
 ## Notice of Non-Affiliation and Disclaimer
 
