@@ -22,7 +22,7 @@ $ ssh -o ProxyCommand='wgcfcat --accept-warp-tos -h %h -p %p' user@ipv6-host
 
 Query an HTTP web server over WARP:
 ```
-$ echo -e 'GET / HTTP/1.1\nHost: ipv6.google.com\n\n' | wgcfcat -a -h ipv6.google.com -p 80
+$ echo -e 'GET / HTTP/1.1\r\nHost: ipv6.google.com\r\n\r\n' | wgcfcat -a -h ipv6.google.com -p 80
 ```
 
 ## Credits
