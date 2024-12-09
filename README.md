@@ -1,6 +1,6 @@
 # `wgcfcat`
 
-Like `netcat`, but over `Cloudflare WARP`!
+Like `netcat`, but over [`Cloudflare WARP`](https://1.1.1.1)!
 
 Usage:
 ```
