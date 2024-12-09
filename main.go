@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/hex"
-	"flag"
 	"io"
 	"log"
 	"net"
@@ -15,17 +14,18 @@ import (
 	"github.com/kirsle/configdir"
 	"github.com/pufferffish/wireproxy"
 	"github.com/sourcegraph/conc"
+	"github.com/spf13/pflag"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/tun/netstack"
 )
 
 var (
-	flAcceptWarpEula = flag.Bool("accept-warp-tos", false, "Accept the Cloudflare WARP Terms Of Service (reqired)")
-	flConfigDir      = flag.String("config-dir", configdir.LocalConfig("ssh-over-warp"), "Configuration directory")
-	flHost           = flag.String("host", "", "Host to connect to over cloudflare WARP")
-	flPort           = flag.Uint("port", 0, "Port to connect to over cloudflare WARP")
-	// TODO: udp -u
-	// TODO: use pflags for short and long flags
+	flAcceptWarpEula = pflag.BoolP("accept-warp-tos", "a", false, "Accept the Cloudflare WARP Terms Of Service (reqired)")
+	flConfigDir      = pflag.StringP("config-dir", "c", configdir.LocalConfig("ssh-over-warp"), "Runtime directory where connection parameters will be stored")
+	flHost           = pflag.StringP("host", "h", "", "Host to connect to over cloudflare WARP")
+	flPort           = pflag.UintP("port", "p", 0, "Port to connect to over cloudflare WARP")
+	flKeepAlive      = pflag.Uint("keepalive", 0, "Keepalive interval in seconds")
+	// TODO: support udp (-u)
 )
 
 func wgcfAccountConfigPath() string {
@@ -58,9 +58,9 @@ func mustResolveIPPAndPort(addr string) *string {
 }
 
 func main() {
-	flag.Parse()
+	pflag.Parse()
 	if !*flAcceptWarpEula || *flHost == "" || *flPort == 0 {
-		flag.Usage()
+		pflag.Usage()
 		os.Exit(1)
 	}
 
@@ -96,7 +96,7 @@ func main() {
 				PublicKey:    mustBase64WireguardKeyToHex(warpAccount.ThisDevice.Config.Peers[0].PublicKey),
 				Endpoint:     mustResolveIPPAndPort(warpAccount.ThisDevice.Config.Peers[0].Endpoint.Host),
 				PreSharedKey: "0000000000000000000000000000000000000000000000000000000000000000",
-				KeepAlive:    0, // todo - expose this as a flag
+				KeepAlive:    int(*flKeepAlive),
 				AllowedIPs: []netip.Prefix{
 					netip.MustParsePrefix("0.0.0.0/0"),
 					netip.MustParsePrefix("::/0"),
