@@ -1,0 +1,37 @@
+name: goreleaser
+run-name: Create a release from tag ${{ github.ref_name }}
+
+on:
+  push:
+    tags: ["*"]
+
+permissions:
+  contents: write
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get our Go version from go.mod
+        id: go-version
+        run: |
+          printf 'version=%s\n' "$(awk '$1 == "go" {print $2}' go.mod)" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Set up Go ${{ steps.go-version.outputs.version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ steps.go-version.outputs.version }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
